@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="popcornhour-controller" default="start" basedir=".">
+    <property name="sources" value="${basedir}/src"/>
+    <property name="approot" value="${basedir}/war"/>
+    <property name="webroot" value="${approot}/WEB-INF"/>
+    <property name="appbinaries" value="${webroot}/classes"/>
+    <property name="applibraries" value="${webroot}/lib"/>
+
+    <property name="module" value="${ant.project.name}"/>
+    <property name="jetty" value="org.dyndns.merelin.pchrc.appserver.Jetty"/>
+
+    <target name="clean">
+        <delete dir="${appbinaries}" failonerror="false"/>
+        <delete file="${applibraries}/${module}.jar" failonerror="false"/>
+        <delete file="${basedir}/${module}.war" failonerror="false"/>
+    </target>
+
+    <target name="build" depends="clean">
+        <mkdir dir="${appbinaries}"/>
+        <javac destdir="${appbinaries}" debug="on">
+            <src path="${sources}"/>
+            <include name="*/**"/>
+            <classpath>
+                <path>
+                    <fileset dir="${applibraries}" includes="*.jar"/>
+                </path>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="pack" depends="build">
+        <unjar dest="${appbinaries}">
+            <fileset dir="${applibraries}" includes="*.jar"/>
+            <patternset>
+                <exclude name="META-INF/**/*"/>
+            </patternset>
+        </unjar>
+        <jar jarfile="${applibraries}/${module}.jar">
+            <fileset dir="${appbinaries}" includes="**/*"/>
+            <manifest>
+                <attribute name="Main-Class" value="${jetty}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="war" depends="pack">
+        <war destfile="${basedir}/${module}.war" webxml="${webroot}/web.xml">
+            <fileset dir="${appbinaries}" includes="Launcher.class"/>
+            <lib file="${applibraries}/${module}.jar"/>
+            <fileset dir="${approot}">
+                <exclude name="WEB-INF/classes/**/*"/>
+                <exclude name="WEB-INF/lib/**/*"/>
+            </fileset>
+            <manifest>
+                <attribute name="Main-Class" value="Launcher"/>
+            </manifest>
+        </war>
+    </target>
+
+    <target name="start" depends="war">
+        <java jar="${basedir}/${module}.war" fork="true">
+            <sysproperty key="module.name" value="${module}"/>
+            <sysproperty key="jetty.class" value="${jetty}"/>
+            <!--sysproperty key="jetty.host" value="mantonyan"/-->
+            <sysproperty key="jetty.port" value="9090"/>
+        </java>
+    </target>
+</project>
