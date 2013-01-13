@@ -9,6 +9,22 @@
     <property name="module" value="${ant.project.name}"/>
     <property name="jetty" value="org.dyndns.merelin.pchrc.appserver.Jetty"/>
 
+    <fileset id="rtlibraries" dir="${applibraries}">
+        <include name="aopalliance.jar"/>
+        <include name="guice-2.0.jar"/>
+        <include name="gwt-servlet.jar"/>
+        <include name="jetty-6.1.24.jar"/>
+        <include name="jetty-util-6.1.24.jar"/>
+        <include name="servlet-api-2.5.jar"/>
+    </fileset>
+
+    <fileset id="devlibraries" dir="${applibraries}">
+        <include name="gwt-dev.jar"/>
+        <include name="gwt-user.jar"/>
+        <include name="validation-api-1.0.0.GA.jar"/>
+        <include name="validation-api-1.0.0.GA-sources.jar"/>
+    </fileset>
+
     <target name="clean">
         <delete dir="${appbinaries}" failonerror="false"/>
         <delete file="${applibraries}/${module}.jar" failonerror="false"/>
@@ -22,7 +38,7 @@
             <include name="*/**"/>
             <classpath>
                 <path>
-                    <fileset dir="${applibraries}" includes="*.jar"/>
+                    <fileset refid="rtlibraries"/>
                 </path>
             </classpath>
         </javac>
@@ -30,7 +46,7 @@
 
     <target name="pack" depends="build">
         <unjar dest="${appbinaries}">
-            <fileset dir="${applibraries}" includes="*.jar"/>
+            <fileset refid="rtlibraries"/>
             <patternset>
                 <exclude name="META-INF/**/*"/>
             </patternset>
@@ -65,4 +81,32 @@
             <sysproperty key="jetty.port" value="9090"/>
         </java>
     </target>
+
+    <target name="gwtc" depends="build">
+        <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+            <classpath>
+                <pathelement location="${sources}"/>
+                <path>
+                    <fileset refid="rtlibraries"/>
+                    <fileset refid="devlibraries"/>
+                </path>
+            </classpath>
+            <arg value="org.dyndns.merelin.pchrc.Popcornhour_controller"/>
+        </java>
+    </target>
+
+    <target name="debug" depends="build">
+        <java failonerror="true" fork="true" classname="com.google.gwt.dev.DevMode">
+            <classpath>
+                <pathelement location="${sources}"/>
+                <path>
+                    <fileset refid="rtlibraries"/>
+                    <fileset refid="devlibraries"/>
+                </path>
+            </classpath>
+          <arg value="-startupUrl"/>
+          <arg value="Popcornhour_controller.html"/>
+          <arg value="org.dyndns.merelin.pchrc.Popcornhour_controller"/>
+        </java>
+      </target>
 </project>
