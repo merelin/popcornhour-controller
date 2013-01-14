@@ -93,6 +93,7 @@
                     <fileset refid="devlibraries"/>
                 </path>
             </classpath>
+            <sysproperty key="java.net.preferIPv4Stack" value="true"/>
             <arg value="org.dyndns.merelin.pchrc.Popcornhour_controller"/>
         </java>
     </target>
@@ -106,9 +107,10 @@
                     <fileset refid="devlibraries"/>
                 </path>
             </classpath>
-          <arg value="-startupUrl"/>
-          <arg value="Popcornhour_controller.html"/>
-          <arg value="org.dyndns.merelin.pchrc.Popcornhour_controller"/>
+            <sysproperty key="java.net.preferIPv4Stack" value="true"/>
+            <arg value="-startupUrl"/>
+            <arg value="Popcornhour_controller.html"/>
+            <arg value="org.dyndns.merelin.pchrc.Popcornhour_controller"/>
         </java>
-      </target>
+    </target>
 </project>
