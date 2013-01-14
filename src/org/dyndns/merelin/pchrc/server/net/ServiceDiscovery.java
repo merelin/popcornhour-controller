@@ -1,41 +1,89 @@
 package org.dyndns.merelin.pchrc.server.net;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
+import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
+import javax.jmdns.ServiceTypeListener;
 
-public class ServiceDiscovery {
-    private static final String[] TYPES = {
-        "_airplay._tcp.local.", "_syb._tcp.local."
-    };
+public class ServiceDiscovery implements ServiceListener, ServiceTypeListener {
+    private static final List<String> PCH_TYPES = Arrays.asList(new String[] {
+            "_syb._tcp.local.", "_airplay._tcp.local.", "_raop._tcp.local."
+    });
 
-    private static class Listener implements ServiceListener {
-        public void serviceAdded(ServiceEvent event) {
-            System.out.println("ADD: " + event.getName() + "." + event.getType());
-        }
+    private final DiscoveryCallback callback;
+    private final JmDNS jmdns;
 
-        public void serviceRemoved(ServiceEvent event) {
-            System.out.println("REMOVED: " + event.getName() + "." + event.getType());
-        }
+    public ServiceDiscovery(DiscoveryCallback callback) throws IOException {
+        System.setProperty("java.net.preferIPv4Stack", "true");
+        this.callback = callback;
+        jmdns = JmDNS.create();
+        jmdns.addServiceTypeListener(this);
+    }
 
-        public void serviceResolved(ServiceEvent event) {
-            System.out.println("RESOLVED: " + event.getName() + "." + event.getType());
+    public void serviceTypeAdded(ServiceEvent event) {
+        System.out.println("TYPE: " + event.getType());
+        if (PCH_TYPES.contains(event.getType())) {
+            jmdns.addServiceListener(event.getType(), this);
         }
     }
 
-    public ServiceDiscovery() throws IOException {
-        Listener listener = new Listener();
-        JmDNS jmdns = JmDNS.create();
-        for (String type : TYPES) {
-            jmdns.addServiceListener(type, listener);
+    public void subTypeForServiceTypeAdded(ServiceEvent event) {
+        System.out.println("SUBTYPE: " + event.getType());
+        if (PCH_TYPES.contains(event.getType())) {
+            jmdns.addServiceListener(event.getType(), this);
         }
-        try {
-            Thread.sleep(30000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    }
+
+    public void serviceAdded(ServiceEvent event) {
+        ServiceInfo info
+            = event.getDNS().getServiceInfo(event.getType(), event.getName());
+        for (InetAddress address : info.getInetAddresses()) {
+            callback.added(address.getHostAddress(), address.getHostName());
         }
-        jmdns.close();
+    }
+
+    public void serviceRemoved(ServiceEvent event) {
+        ServiceInfo info
+            = event.getDNS().getServiceInfo(event.getType(), event.getName());
+        for (InetAddress address : info.getInetAddresses()) {
+            callback.removed(address.getHostAddress(), address.getHostName());
+        }
+    }
+
+    public void serviceResolved(ServiceEvent event) {
+        for (InetAddress address : event.getInfo().getInetAddresses()) {
+            callback.resolved(address.getHostAddress(), address.getHostName());
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        DiscoveryCallback callback = new DiscoveryCallback() {
+            public void added(String ip, String hostname) {
+                System.out.println("ADDED:    " + ip + " -> " + hostname);
+            }
+
+            public void resolved(String ip, String hostname) {
+                System.out.println("RESOLVED: " + ip + " -> " + hostname);
+            }
+
+            public void removed(String ip, String hostname) {
+                System.out.println("REMOVED:  " + ip + " -> " + hostname);
+            }
+        };
+        new ServiceDiscovery(callback);
+
+        for (;;) {
+            try {
+                Thread.sleep(Long.MAX_VALUE);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
