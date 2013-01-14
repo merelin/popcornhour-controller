@@ -76,6 +76,7 @@
 
     <target name="start" depends="war">
         <java jar="${basedir}/${module}.war" fork="true">
+            <sysproperty key="java.net.preferIPv4Stack" value="true"/>
             <sysproperty key="module.name" value="${module}"/>
             <sysproperty key="jetty.class" value="${jetty}"/>
             <!--sysproperty key="jetty.host" value="mantonyan"/-->
