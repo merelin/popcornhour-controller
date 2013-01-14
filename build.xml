@@ -15,6 +15,7 @@
         <include name="gwt-servlet.jar"/>
         <include name="jetty-6.1.24.jar"/>
         <include name="jetty-util-6.1.24.jar"/>
+        <include name="jmdns-3.4.1.jar"/>
         <include name="servlet-api-2.5.jar"/>
     </fileset>
 

@@ -37,6 +37,7 @@ public class Launcher {
         return tmp.toURI().toURL();
     }
 
+    @SuppressWarnings("resource")
     private static ClassLoader makeClassLoader(ClassLoader parent, URL... urls) {
         if (urls.length == 0) {
             return parent;
