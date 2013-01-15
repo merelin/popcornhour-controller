@@ -27,14 +27,12 @@ public class ServiceDiscovery implements ServiceListener, ServiceTypeListener {
     }
 
     public void serviceTypeAdded(ServiceEvent event) {
-        System.out.println("TYPE: " + event.getType());
         if (PCH_TYPES.contains(event.getType())) {
             jmdns.addServiceListener(event.getType(), this);
         }
     }
 
     public void subTypeForServiceTypeAdded(ServiceEvent event) {
-        System.out.println("SUBTYPE: " + event.getType());
         if (PCH_TYPES.contains(event.getType())) {
             jmdns.addServiceListener(event.getType(), this);
         }
