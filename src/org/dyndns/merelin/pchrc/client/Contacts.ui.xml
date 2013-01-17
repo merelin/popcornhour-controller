@@ -1,0 +1,18 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+        xmlns:g='urn:import:com.google.gwt.user.client.ui'
+        xmlns:pchrc='urn:import:org.dyndns.merelin.pchrc.client'>
+
+    <ui:style field='style' type='org.dyndns.merelin.pchrc.client.Contacts.Style'>
+        .contacts {
+            padding: 0.5em;
+            line-height: 150%;
+        }
+
+        .item {
+            display: block;
+        }
+    </ui:style>
+
+    <g:FlowPanel styleName='{style.contacts}' ui:field='panel'/>
+</ui:UiBinder>
