@@ -1,9 +1,13 @@
 package org.dyndns.merelin.pchrc.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.dyndns.merelin.pchrc.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -15,7 +19,9 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.NotStrict;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -41,11 +47,10 @@ public class Popcornhour_controller implements EntryPoint {
             + "attempting to contact the server. Please check your network "
             + "connection and try again.";
 
-    /**
-     * Create a remote service proxy to talk to the server-side Greeting service.
-     */
-    private final GreetingServiceAsync greetingService = GWT
-            .create(GreetingService.class);
+    private final DiscoveryServiceAsync discoveryService
+        = GWT.create(DiscoveryService.class);
+
+    private final List<String> devices = new ArrayList<String>();
 
     interface GlobalResources extends ClientBundle {
         @NotStrict
@@ -91,5 +96,11 @@ public class Popcornhour_controller implements EntryPoint {
         // displayed.
         RootLayoutPanel root = RootLayoutPanel.get();
         root.add(outer);
+
+        DeviceSelectorDialog dlg = new DeviceSelectorDialog(discoveryService);
+        devices.addAll(dlg.getDevices());
+        System.out.println(devices);
+        dlg.show();
+        dlg.center();
     }
 }

@@ -1,0 +1,43 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+        xmlns:g='urn:import:com.google.gwt.user.client.ui'
+        xmlns:c='urn:import:com.google.gwt.user.cellview.client'
+        xmlns:pchrc='urn:import:org.dyndns.merelin.pchrc.client'>
+
+    <ui:image field='logo' src='pch.png'/>
+
+    <ui:style>
+        .panel {
+            padding: 10px;
+        }
+
+        .aboutText {
+            text-align: left;
+        }
+
+        @sprite .logo {
+            gwt-image: 'logo';
+            float: left;
+            padding-right: 1em;
+        }
+
+        .buttons {
+            text-align: right;
+        }
+    </ui:style>
+
+    <g:HTMLPanel height="32em" width='32em' styleName='{style.panel}'>
+        <div class='{style.logo}'/>
+
+        <div class='{style.aboutText}'>
+            <g:ScrollPanel>
+                <c:CellList ui:field="cells" />
+            </g:ScrollPanel>
+        </div>
+
+        <div class='{style.buttons}'>
+            <g:Button text='OK' ui:field='closeButton' />
+        </div>
+    </g:HTMLPanel>
+
+</ui:UiBinder>
