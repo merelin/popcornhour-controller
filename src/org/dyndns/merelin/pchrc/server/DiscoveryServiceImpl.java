@@ -1,11 +1,12 @@
 package org.dyndns.merelin.pchrc.server;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.dyndns.merelin.pchrc.client.DiscoveryService;
 import org.dyndns.merelin.pchrc.server.net.DiscoveryCallback;
+import org.dyndns.merelin.pchrc.server.net.Host;
 import org.dyndns.merelin.pchrc.server.net.ServiceDiscovery;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -14,42 +15,52 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class DiscoveryServiceImpl extends RemoteServiceServlet
         implements DiscoveryCallback, DiscoveryService {
 
-    private final List<String> devices = new ArrayList<String>();
-    private ServiceDiscovery service;
+    private final Set<Host> hosts = new HashSet<Host>();
 
-    public DiscoveryServiceImpl() {
-        try {
-            service = new ServiceDiscovery(this);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void added(Host host) {
+        synchronized (hosts) {
+            hosts.add(host);
         }
+        System.out.println("ADDED:    " + host);
     }
 
-    public void added(String ip, String hostname) {
-        String s = ip + '/' + hostname;
-        if (!devices.contains(s)) {
-            devices.add(s);
+    public void resolved(Host host) {
+        synchronized (hosts) {
+            hosts.add(host);
         }
-
-        System.out.println("ADDED:    " + ip + " -> " + hostname);
+        System.out.println("RESOLVED: " + host);
     }
 
-    public void resolved(String ip, String hostname) {
-        String s = ip + '/' + hostname;
-        if (!devices.contains(s)) {
-            devices.add(s);
+    public void removed(Host host) {
+        synchronized (hosts) {
+            hosts.remove(host);
         }
-
-        System.out.println("RESOLVED: " + ip + " -> " + hostname);
-    }
-
-    public void removed(String ip, String hostname) {
-        devices.remove(ip + '/' + hostname);
-
-        System.out.println("REMOVED:  " + ip + " -> " + hostname);
+        System.out.println("REMOVED:  " + host);
     }
 
     public String[] discover() {
-        return devices.toArray(new String[devices.size()]);
+        // Will return immediately after the first discovered host
+        try {
+            new ServiceDiscovery(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Wait extra second for other hosts
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // Ignore
+        }
+
+        synchronized (hosts) {
+            String[] array = new String[hosts.size()];
+            int i = 0;
+            for (Host h : hosts) {
+                array[i++] = h.toString();
+            }
+            System.out.println("array: " + java.util.Arrays.toString(array));
+            return array;
+        }
     }
 }

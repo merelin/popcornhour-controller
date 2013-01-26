@@ -1,6 +1,7 @@
 package org.dyndns.merelin.pchrc.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.gwt.cell.client.TextCell;
@@ -31,19 +32,24 @@ public class DeviceSelectorDialog extends DialogBox {
     @UiField Button closeButton;
 
     class Callback implements AsyncCallback<String[]> {
-        private final List<String> devices = new ArrayList<String>();
-        private String message;
+        private final List<String> hosts = new ArrayList<String>();
 
         public void onFailure(Throwable caught) {
-            message = SERVER_ERROR;
+            hosts.clear();
+            cells.setRowCount(1, true);
+            cells.setRowData(0, Arrays.asList(new String[] {SERVER_ERROR}));
+            cells.redraw();
         }
 
         public void onSuccess(String[] result) {
-            message = null;
             if (result != null) {
-                for (String device : result) {
-                    devices.add(device);
+                for (String host : result) {
+                    hosts.add(host);
                 }
+
+                cells.setRowCount(hosts.size(), true);
+                cells.setRowData(0, hosts);
+                cells.redraw();
             }
         }
     }
@@ -55,30 +61,20 @@ public class DeviceSelectorDialog extends DialogBox {
 
         setText("Select the device");
         setWidget(binder.createAndBindUi(this));
-
         setAnimationEnabled(true);
         setGlassEnabled(true);
         setModal(true);
     }
 
-    public List<String> getDevices() {
-        return callback.devices;
+    public List<String> getHosts() {
+        return callback.hosts;
     }
 
     @UiFactory CellList<String> makeCellList() {
-        CellList<String> list;
+        CellList<String> list = new CellList<String>(new TextCell());
+        list.setRowCount(0, true);
 
-        if (callback.message != null) {
-            TextCell cell = new TextCell();
-            cell.setValue(null, null, callback.message);
-            list = new CellList<String>(cell);
-        } else {
-            list = new CellList<String>(new TextCell());
-            list.setRowCount(callback.devices.size(), true);
-            list.setRowData(0, callback.devices);
-        }
-
-        return list;
+        return new CellList<String>(new TextCell());
     }
 
     @Override

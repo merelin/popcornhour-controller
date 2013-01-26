@@ -50,7 +50,7 @@ public class Popcornhour_controller implements EntryPoint {
     private final DiscoveryServiceAsync discoveryService
         = GWT.create(DiscoveryService.class);
 
-    private final List<String> devices = new ArrayList<String>();
+    private final List<String> hosts = new ArrayList<String>();
 
     interface GlobalResources extends ClientBundle {
         @NotStrict
@@ -98,8 +98,8 @@ public class Popcornhour_controller implements EntryPoint {
         root.add(outer);
 
         DeviceSelectorDialog dlg = new DeviceSelectorDialog(discoveryService);
-        devices.addAll(dlg.getDevices());
-        System.out.println(devices);
+        hosts.addAll(dlg.getHosts());
+        System.out.println(hosts);
         dlg.show();
         dlg.center();
     }

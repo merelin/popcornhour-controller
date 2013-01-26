@@ -45,7 +45,7 @@
         </javac>
     </target>
 
-    <target name="pack" depends="build">
+    <target name="pack" depends="gwtc">
         <unjar dest="${appbinaries}">
             <fileset refid="rtlibraries"/>
             <patternset>
