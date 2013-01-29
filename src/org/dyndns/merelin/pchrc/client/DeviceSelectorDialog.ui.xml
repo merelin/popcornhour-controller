@@ -26,17 +26,13 @@
         }
     </ui:style>
 
-    <g:HTMLPanel height="32em" width='32em' styleName='{style.panel}'>
-        <div class='{style.logo}'/>
-
+    <g:HTMLPanel width='24em' styleName='{style.panel}'>
         <div class='{style.aboutText}'>
-            <g:ScrollPanel>
-                <c:CellList ui:field="cells" />
-            </g:ScrollPanel>
+            <g:VerticalPanel ui:field="panel" styleName='{style.panel}'/>
         </div>
 
         <div class='{style.buttons}'>
-            <g:Button text='OK' ui:field='closeButton' />
+            <g:Button text='Close' ui:field='closeButton' />
         </div>
     </g:HTMLPanel>
 

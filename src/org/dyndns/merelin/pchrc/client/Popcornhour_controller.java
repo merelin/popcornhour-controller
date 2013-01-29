@@ -3,7 +3,10 @@ package org.dyndns.merelin.pchrc.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dyndns.merelin.pchrc.shared.Context;
 import org.dyndns.merelin.pchrc.shared.FieldVerifier;
+import org.dyndns.merelin.pchrc.shared.Keys;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -38,6 +41,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class Popcornhour_controller implements EntryPoint {
     interface Binder extends UiBinder<DockLayoutPanel, Popcornhour_controller> {}
+    private static final Binder binder = GWT.create(Binder.class);
 
     /**
      * The message displayed to the user when the server cannot be reached or
@@ -47,23 +51,22 @@ public class Popcornhour_controller implements EntryPoint {
             + "attempting to contact the server. Please check your network "
             + "connection and try again.";
 
-    private final DiscoveryServiceAsync discoveryService
-        = GWT.create(DiscoveryService.class);
-
-    private final List<String> hosts = new ArrayList<String>();
-
     interface GlobalResources extends ClientBundle {
         @NotStrict
         @Source("global.css")
         CssResource css();
     }
 
-    private static final Binder binder = GWT.create(Binder.class);
-
     @UiField TopPanel topPanel;
     @UiField MailList mailList;
     @UiField MailDetail mailDetail;
     @UiField Shortcuts shortcuts;
+
+    public Popcornhour_controller() {
+        Context.<DiscoveryServiceAsync>put(
+                Keys.DISCOVERY_SERVICE,
+                GWT.<DiscoveryServiceAsync>create(DiscoveryService.class));
+    }
 
     /**
      * This is the entry point method.
@@ -96,11 +99,5 @@ public class Popcornhour_controller implements EntryPoint {
         // displayed.
         RootLayoutPanel root = RootLayoutPanel.get();
         root.add(outer);
-
-        DeviceSelectorDialog dlg = new DeviceSelectorDialog(discoveryService);
-        hosts.addAll(dlg.getHosts());
-        System.out.println(hosts);
-        dlg.show();
-        dlg.center();
     }
 }

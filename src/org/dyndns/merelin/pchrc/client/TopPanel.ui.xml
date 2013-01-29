@@ -22,8 +22,8 @@
             @url logoIe6 logoIe6Data;
             .logo {
                 background-image: logoIe6;
-                width: 140px;
-                height: 75px;
+                width: 128px;
+                height: 51px;
                 position: absolute;
             }
         } @else {
@@ -43,7 +43,7 @@
             </div>
 
             <div class='{style.linksDiv}'>
-                <g:Anchor href='javascript:;' ui:field='signOutLink'>Sign Out</g:Anchor>
+                <g:Anchor href='javascript:;' ui:field='selectDeviceLink'>Select Device</g:Anchor>
                 &nbsp;
                 <g:Anchor href='javascript:;' ui:field='aboutLink'>About</g:Anchor>
             </div>

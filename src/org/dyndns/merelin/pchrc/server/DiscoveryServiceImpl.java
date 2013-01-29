@@ -21,21 +21,18 @@ public class DiscoveryServiceImpl extends RemoteServiceServlet
         synchronized (hosts) {
             hosts.add(host);
         }
-        System.out.println("ADDED:    " + host);
     }
 
     public void resolved(Host host) {
         synchronized (hosts) {
             hosts.add(host);
         }
-        System.out.println("RESOLVED: " + host);
     }
 
     public void removed(Host host) {
         synchronized (hosts) {
             hosts.remove(host);
         }
-        System.out.println("REMOVED:  " + host);
     }
 
     public String[] discover() {
@@ -59,7 +56,7 @@ public class DiscoveryServiceImpl extends RemoteServiceServlet
             for (Host h : hosts) {
                 array[i++] = h.toString();
             }
-            System.out.println("array: " + java.util.Arrays.toString(array));
+
             return array;
         }
     }

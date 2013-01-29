@@ -14,7 +14,7 @@ public class TopPanel extends Composite {
     interface Binder extends UiBinder<Widget, TopPanel> {}
     private static final Binder binder = GWT.create(Binder.class);
 
-    @UiField Anchor signOutLink;
+    @UiField Anchor selectDeviceLink;
     @UiField Anchor aboutLink;
 
     public TopPanel() {
@@ -31,8 +31,11 @@ public class TopPanel extends Composite {
         dlg.center();
     }
 
-    @UiHandler("signOutLink")
-    void onSignOutClicked(ClickEvent event) {
-        Window.alert("If this were implemented, you would be signed out now.");
+    @UiHandler("selectDeviceLink")
+    void onselectDeviceClicked(ClickEvent event) {
+        //Window.alert("If this were implemented, you would be signed out now.");
+        DeviceSelectorDialog dlg = new DeviceSelectorDialog();
+        dlg.show();
+        dlg.center();
     }
 }

@@ -1,13 +1,16 @@
 package org.dyndns.merelin.pchrc.client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import org.dyndns.merelin.pchrc.shared.Context;
+import org.dyndns.merelin.pchrc.shared.Keys;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
@@ -16,8 +19,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DeviceSelectorDialog extends DialogBox {
@@ -28,7 +33,7 @@ public class DeviceSelectorDialog extends DialogBox {
             + "attempting to contact the server. Please check your network "
             + "connection and try again.";
 
-    @UiField CellList<String> cells;
+    @UiField VerticalPanel panel;
     @UiField Button closeButton;
 
     class Callback implements AsyncCallback<String[]> {
@@ -36,38 +41,54 @@ public class DeviceSelectorDialog extends DialogBox {
 
         public void onFailure(Throwable caught) {
             hosts.clear();
-            cells.setRowCount(1, true);
-            cells.setRowData(0, Arrays.asList(new String[] {SERVER_ERROR}));
-            cells.redraw();
+            panel.clear();
+            Anchor a = new Anchor(SERVER_ERROR);
+            a.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    DeviceSelectorDialog.this.hide();
+                }
+            });
+            panel.add(a);
         }
 
         public void onSuccess(String[] result) {
             if (result != null) {
                 for (String host : result) {
                     hosts.add(host);
+                    Anchor a = new Anchor(host);
+                    final String device = host;
+                    a.addClickHandler(new ClickHandler() {
+                        public void onClick(ClickEvent event) {
+                            devices.add(device);
+                            DeviceSelectorDialog.this.hide();
+                        }
+                    });
+                    panel.add(a);
+                    DeviceSelectorDialog.this.center();
                 }
-
-                cells.setRowCount(hosts.size(), true);
-                cells.setRowData(0, hosts);
-                cells.redraw();
             }
         }
     }
 
     private final Callback callback = new Callback();
+    private List<String> devices;
 
-    public DeviceSelectorDialog(DiscoveryServiceAsync discoveryService) {
+    public DeviceSelectorDialog() {
+        devices = Context.<List<String>>get(Keys.SELECTED_DEVICES);
+        if (devices == null) {
+            devices = new ArrayList<String>();
+            Context.<List<String>>put(Keys.SELECTED_DEVICES, devices);
+        }
+
+        DiscoveryServiceAsync discoveryService
+            = Context.<DiscoveryServiceAsync>get(Keys.DISCOVERY_SERVICE);
         discoveryService.discover(callback);
 
-        setText("Select the device");
+        setText("Select a device");
         setWidget(binder.createAndBindUi(this));
         setAnimationEnabled(true);
         setGlassEnabled(true);
         setModal(true);
-    }
-
-    public List<String> getHosts() {
-        return callback.hosts;
     }
 
     @UiFactory CellList<String> makeCellList() {
