@@ -3,20 +3,20 @@ package org.dyndns.merelin.pchrc.server.service.xml;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dyndns.merelin.pchrc.server.service.Function;
+import org.dyndns.merelin.pchrc.server.service.Module;
 import org.dyndns.merelin.pchrc.server.service.request.Request;
-import org.dyndns.merelin.pchrc.server.service.response.Response;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class ResponseHandler extends DefaultHandler {
+public class ResponseHandler<T> extends DefaultHandler {
     private Request request;
-    private String module;
-    private String function;
+    private Module module;
+    private Function function;
     private List<String> arguments = new ArrayList<String>();
 
-    private Response response;
-    private ResponsePartHandler responseHandler;
+    private ResponsePartHandler<T> responseHandler;
 
     private int returnValue;
 
@@ -28,22 +28,23 @@ public class ResponseHandler extends DefaultHandler {
 
     private State state = State.UNKNOWN;
 
+    @SuppressWarnings("unchecked")
     public void startElement(String uri, String localName, String qName,
             Attributes attributes) throws SAXException {
         switch (state) {
         case UNKNOWN:
-            if ("theDavidBox".equals(localName)) {
+            if (Tags.THE_DAVID_BOX.equals(localName)) {
                 state = State.THE_DAVID_BOX;
             }
             break;
 
         case THE_DAVID_BOX:
-            if ("request".equals(localName)) {
+            if (Tags.REQUEST.equals(localName)) {
                 state = State.REQUEST;
-            } else if ("response".equals(localName)) {
+            } else if (Tags.RESPONSE.equals(localName)) {
                 state = State.RESPONSE;
                 responseHandler = ResponsePartHandlerFactory.create(request);
-            } else if ("returnValue".equals(localName)) {
+            } else if (Tags.RETURN_VALUE.equals(localName)) {
                 state = State.RETURN_VALUE;
             }
             break;
@@ -70,22 +71,22 @@ public class ResponseHandler extends DefaultHandler {
             break;
 
         case THE_DAVID_BOX:
-            if ("theDavidBox".equals(localName)) {
+            if (Tags.THE_DAVID_BOX.equals(localName)) {
                 state = State.UNKNOWN;
             }
             break;
 
         case REQUEST:
-            if ("request".equals(localName)) {
+            if (Tags.REQUEST.equals(localName)) {
                 state = State.THE_DAVID_BOX;
                 String[] args = arguments.toArray(new String[arguments.size()]);
                 request = new Request(module, function, args);
-            } else if ("module".equals(localName)) {
-                module = txt;
-            } else if (localName.startsWith("arg")) {
+            } else if (Tags.MODULE.equals(localName)) {
+                module = Module.getModule(txt);
+            } else if (localName.startsWith(Tags.ARGUMENT)) {
                 int index = Integer.parseInt(localName.substring(3));
                 if (index == 0) {
-                    function = txt;
+                    function = Function.getFunction(txt);
                 } else {
                     arguments.add(txt);
                 }
@@ -93,7 +94,7 @@ public class ResponseHandler extends DefaultHandler {
             break;
 
         case RESPONSE:
-            if ("response".equals(localName)) {
+            if (Tags.RESPONSE.equals(localName)) {
                 state = State.THE_DAVID_BOX;
             } else {
                 responseHandler.endElement(uri, localName, qName);
@@ -101,7 +102,7 @@ public class ResponseHandler extends DefaultHandler {
             break;
 
         case RETURN_VALUE:
-            if ("returnValue".equals(localName)) {
+            if (Tags.RETURN_VALUE.equals(localName)) {
                 state = State.THE_DAVID_BOX;
                 returnValue = Integer.parseInt(txt);
             }
@@ -130,8 +131,8 @@ public class ResponseHandler extends DefaultHandler {
         return request;
     }
 
-    public Response getResponse() {
-        return response;
+    public T getResponse() {
+        return responseHandler.getResponse();
     }
 
     public int getReturnValue() {

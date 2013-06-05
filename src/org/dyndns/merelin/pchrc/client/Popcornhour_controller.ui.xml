@@ -4,7 +4,7 @@
         xmlns:pchrc='urn:import:org.dyndns.merelin.pchrc.client'>
 
     <g:DockLayoutPanel unit='EM'>
-        <g:north size='4'>
+        <g:north size='5'>
             <pchrc:TopPanel ui:field='topPanel' />
         </g:north>
 

@@ -43,9 +43,9 @@
             </div>
 
             <div class='{style.linksDiv}'>
-                <g:Anchor href='javascript:;' ui:field='selectDeviceLink'>Select Device</g:Anchor>
+                <g:Button ui:field='selectDeviceLink'>Select Device</g:Button>
                 &nbsp;
-                <g:Anchor href='javascript:;' ui:field='aboutLink'>About</g:Anchor>
+                <g:Button ui:field='aboutLink'>About</g:Button>
             </div>
         </div>
     </g:HTMLPanel>

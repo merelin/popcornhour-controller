@@ -15,9 +15,9 @@ public class ResponseParser {
         this.xml = xml;
     }
 
-    public ResponseHandler parse() throws IOException, SAXException {
+    public <T> ResponseHandler<T> parse() throws IOException, SAXException {
         XMLReader reader = XMLReaderFactory.createXMLReader();
-        ResponseHandler handler = new ResponseHandler();
+        ResponseHandler<T> handler = new ResponseHandler<T>();
         reader.setContentHandler(handler);
         reader.parse(new InputSource(new StringReader(xml)));
         return handler;

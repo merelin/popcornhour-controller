@@ -7,9 +7,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 
 import org.dyndns.merelin.pchrc.server.service.request.Request;
+import org.dyndns.merelin.pchrc.server.service.request.module.fileoperation.ListUserStorageFileRequest;
+import org.dyndns.merelin.pchrc.server.service.request.module.playback.GetCurrentVODInfoRequest;
+import org.dyndns.merelin.pchrc.server.service.request.module.playback.ListVODSupportedFormatRequest;
+import org.dyndns.merelin.pchrc.server.service.request.module.setting.GetTimeZoneRequest;
+import org.dyndns.merelin.pchrc.server.service.response.module.fileoperation.ListUserStorageFileResponse;
 import org.dyndns.merelin.pchrc.server.service.xml.ResponseHandler;
 import org.dyndns.merelin.pchrc.server.service.xml.ResponseParser;
 import org.xml.sax.SAXException;
@@ -63,8 +67,8 @@ public class RemoteService {
     private URL assembleUrl(Request request) throws MalformedURLException {
         StringBuilder buf = new StringBuilder();
         buf.append(urlBase);
-        buf.append(request.getModule());
-        buf.append("?arg0=").append(request.getFunction());
+        buf.append(request.getModule().getName());
+        buf.append("?arg0=").append(request.getFunction().getName());
         String[] args = request.getArguments();
 
         for (int i = 0; i < args.length; i++) {
@@ -77,14 +81,21 @@ public class RemoteService {
     public static void main(String[] args) throws IOException, SAXException {
         RemoteService service = new RemoteService("localhost", 8008);
         String content
-            = service.call(new Request("setting", "get_current_vod_info"));
+            = service.call(new GetTimeZoneRequest());
         ResponseParser parser = new ResponseParser(content);
         ResponseHandler handler = parser.parse();
+
         System.out.println("returnValue: " + handler.getReturnValue());
-        System.out.println("request: module: "
-                + handler.getRequest().getModule()
-                + ", function: " + handler.getRequest().getFunction()
-                + ", args: " + Arrays.toString(handler.getRequest().getArguments()));
+        System.out.println("request: " + handler.getRequest());
         System.out.println("response: " + handler.getResponse());
+
+//        String content
+//            = service.call(new ListUserStorageFileRequest("/", "0", "100", "true", "true", "true", "", "name_asc", "false"));
+//        ResponseParser parser = new ResponseParser(content);
+//        ResponseHandler<ListUserStorageFileResponse> handler = parser.parse();
+//
+//        System.out.println("returnValue: " + handler.getReturnValue());
+//        System.out.println("request: " + handler.getRequest());
+//        System.out.println("response: " + handler.getResponse());
     }
 }

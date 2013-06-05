@@ -42,7 +42,7 @@ public class DeviceSelectorDialog extends DialogBox {
         public void onFailure(Throwable caught) {
             hosts.clear();
             panel.clear();
-            Anchor a = new Anchor(SERVER_ERROR);
+            Button a = new Button(SERVER_ERROR);
             a.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     DeviceSelectorDialog.this.hide();
@@ -55,7 +55,7 @@ public class DeviceSelectorDialog extends DialogBox {
             if (result != null) {
                 for (String host : result) {
                     hosts.add(host);
-                    Anchor a = new Anchor(host);
+                    Button a = new Button(host);
                     final String device = host;
                     a.addClickHandler(new ClickHandler() {
                         public void onClick(ClickEvent event) {

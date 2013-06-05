@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -14,8 +15,8 @@ public class TopPanel extends Composite {
     interface Binder extends UiBinder<Widget, TopPanel> {}
     private static final Binder binder = GWT.create(Binder.class);
 
-    @UiField Anchor selectDeviceLink;
-    @UiField Anchor aboutLink;
+    @UiField Button selectDeviceLink;
+    @UiField Button aboutLink;
 
     public TopPanel() {
         initWidget(binder.createAndBindUi(this));
